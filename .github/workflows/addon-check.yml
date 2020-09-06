@@ -10,8 +10,8 @@ jobs:
       fail-fast: false
       matrix:
         # FIXME: Required dependencies addon.signals and pycryptodome not available on Matrix yet
-        #kodi-branch: [leia, matrix]
-        kodi-branch: [leia]
+        kodi-branch: [leia, matrix]
+        #kodi-branch: [leia]
     steps:
     - uses: actions/checkout@v2
       with:
@@ -25,8 +25,8 @@ jobs:
         sudo apt-get install xmlstarlet
         python -m pip install --upgrade pip packaging
         # FIXME: Requires changes from xbmc/addon-check#217
-        #pip install kodi-addon-checker
-        pip install git+git://github.com/xbmc/addon-check.git@master
+        pip install kodi-addon-checker
+        #pip install git+git://github.com/xbmc/addon-check.git@master
     - name: Remove unwanted files
       run: awk '/export-ignore/ { print $1 }' .gitattributes | xargs rm -rf --
       working-directory: ${{ github.repository }}
