@@ -38,6 +38,7 @@ def route_search_nav(pathitems, perpetual_range_start, dir_update_listing, param
     path = pathitems[2] if len(pathitems) > 2 else 'list'
     LOG.debug('Routing "search" navigation to: {}', path)
     ret = True
+    dir_update_listing = True if params.get('container_update') else dir_update_listing
     if path == 'list':
         search_list()
     elif path == 'add':
@@ -91,14 +92,11 @@ def search_add():
             row_id = _search_add_bygenreid(SEARCH_TYPES[type_index], genre_id)
     else:
         raise NotImplementedError('Search type index {} not implemented'.format(type_index))
-    # Execute the research
-    if row_id is None:
-        return False
-    # Redirect to "search" endpoint (otherwise causes problems with Container.Refresh used by context menus)
-    end_of_directory(False)
-    url = common.build_url(['search', 'search', row_id], mode=G.MODE_DIRECTORY)
-    common.container_update(url, False)
-    return True
+    if row_id is not None and search_query(row_id, 0, False):
+        url = common.build_url(['search', 'search', row_id], mode=G.MODE_DIRECTORY, params={'container_update': True})
+        common.container_update(url, False)
+        return True
+    return False
 
 
 def _search_add_bylang(search_type, dict_languages):
@@ -155,7 +153,9 @@ def search_clear():
     if not ui.ask_for_confirmation(common.get_local_string(30404), common.get_local_string(30406)):
         return False
     G.LOCAL_DB.clear_search_items()
-    search_list(dir_update_listing=True)
+    search_list(dir_update_listing=False)
+    url = common.build_url(['search', 'search'], mode=G.MODE_DIRECTORY)
+    common.container_update(url, True)
     return True
 
 
