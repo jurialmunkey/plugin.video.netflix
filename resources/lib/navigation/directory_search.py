@@ -40,7 +40,7 @@ def route_search_nav(pathitems, perpetual_range_start, dir_update_listing, param
     ret = True
     dir_update_listing = True if params.get('container_update') else dir_update_listing
     if path == 'list':
-        search_list()
+        search_list(dir_update_listing=dir_update_listing)
     elif path == 'add':
         ret = search_add()
     elif path == 'edit':
@@ -154,8 +154,8 @@ def search_clear():
         return False
     G.LOCAL_DB.clear_search_items()
     search_list(dir_update_listing=False)
-    url = common.build_url(['search', 'search'], mode=G.MODE_DIRECTORY)
-    common.container_update(url, True)
+    url = common.build_url(['search', 'search'], mode=G.MODE_DIRECTORY, params={'container_update': True})
+    common.container_update(url, False)
     return True
 
 
